@@ -2,7 +2,15 @@
 
 namespace TodoApi.Services
 {
-    public class TodoService
+    public interface ITodoService
+    {
+        public Task<List<TodoItem>> GetAllAsync();
+        public Task<TodoItem> AddAsync(TodoItem item);
+        public Task<TodoItem?> GetByIdAsync(int id);
+        public Task<bool> UpdateAsync(TodoItem item, int id);
+        public Task<bool> DeleteAsync(int id);
+    }
+    public class TodoService : ITodoService
     {
         private readonly List<TodoItem> _todoList = new();
         private int _nextId = 0;
@@ -32,7 +40,7 @@ namespace TodoApi.Services
             exist.CreatedAt = item.CreatedAt;
             return Task.FromResult(true);
         }
-        public Task<bool> RemoveAsync(int id)
+        public Task<bool> DeleteAsync(int id)
         {
             var exist = _todoList.FirstOrDefault(t => t.Id == id);
             if (exist == null)
