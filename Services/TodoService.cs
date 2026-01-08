@@ -21,6 +21,8 @@ namespace TodoApi.Services
         public Task<TodoItem> AddAsync(TodoItem item)
         {
             item.Id = ++_nextId;
+            item.IsCompleted = false;
+            item.CreatedAt = DateOnly.FromDateTime(DateTime.Now);
             _todoList.Add(item);
             return Task.FromResult(item);
         }
@@ -36,6 +38,7 @@ namespace TodoApi.Services
             {
                 return Task.FromResult(false);
             }
+            exist.Id = id;
             exist.Title = item.Title; 
             exist.CreatedAt = item.CreatedAt;
             return Task.FromResult(true);
