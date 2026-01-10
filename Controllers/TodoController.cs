@@ -1,6 +1,8 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using TodoApi.Services.InterfaceServices;
 using TodoApi.Models;
+using TodoApi.DTO.Request;
+using TodoApi.DTO.Response;
 
 namespace TodoApi.Controllers
 {
@@ -14,26 +16,58 @@ namespace TodoApi.Controllers
             _todoService = todoService;
         }
         [HttpGet]
-        public async Task<ActionResult<List<TodoItem>>> GetAll()
+        public async Task<ActionResult<List<TodoResponse>>> GetAll()
         {
             var todoList = await _todoService.GetAllAsync();
-            return Ok(todoList);
+            var todoResponse = todoList.Select(item => new TodoResponse 
+            { 
+                Id = item.Id, 
+                Title = item.Title, 
+                IsCompleted = item.IsCompleted, 
+                CreatedAt = item.CreatedAt 
+            }).ToList();
+            return Ok(todoResponse);
         }
         [HttpGet("{id}")]
-        public async Task<ActionResult<TodoItem?>> GetById(int id)
+        public async Task<ActionResult<TodoResponse?>> GetById(int id)
         {
             var todoItem = await _todoService.GetByIdAsync(id);
-            return todoItem != null ? Ok(todoItem) : NotFound();
+            if (todoItem == null) return NotFound();
+            var todoResponse = new TodoResponse 
+            { 
+                Id = todoItem.Id, 
+                Title = todoItem.Title, 
+                IsCompleted = todoItem.IsCompleted, 
+                CreatedAt = todoItem.CreatedAt 
+            };
+            return Ok(todoResponse);
         }
         [HttpPost]
-        public async Task<ActionResult<TodoItem>> Add(TodoItem item)
+        public async Task<ActionResult<TodoResponse>> Add(TodoRequest todoRequest)
         {
+            var item = new TodoItem
+            {
+                Title = todoRequest.Title,
+                IsCompleted = todoRequest.IsCompleted
+            };
             var todoItem = await _todoService.AddAsync(item);
-            return CreatedAtAction(nameof(GetById), new { id = todoItem.Id }, todoItem);
+            var todoResponse = new TodoResponse 
+            { 
+                Id = todoItem.Id, 
+                Title = todoItem.Title, 
+                IsCompleted = todoItem.IsCompleted, 
+                CreatedAt = todoItem.CreatedAt 
+            };
+            return CreatedAtAction(nameof(GetById), new { id = todoResponse.Id }, todoResponse);
         }
         [HttpPut("{id}")]
-        public async Task<IActionResult> Update(TodoItem item, int id)
+        public async Task<IActionResult> Update(TodoRequest todoRequest, int id)
         {
+            var item = new TodoItem
+            {
+                Title = todoRequest.Title,
+                IsCompleted = todoRequest.IsCompleted
+            };
             var success = await _todoService.UpdateAsync(item, id);
             return success ? NoContent() : NotFound();
         }

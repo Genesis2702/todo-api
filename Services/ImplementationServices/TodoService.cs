@@ -8,12 +8,10 @@ namespace TodoApi.Services.ImplementationServices
     public class TodoService : ITodoService
     {
         private readonly TodoDbContext _todoContext;
-
         public TodoService(TodoDbContext todoContext)
         {
             _todoContext = todoContext;
         }
-
         public async Task<List<TodoItem>> GetAllAsync()
         {
             return await _todoContext.TodoItems.AsNoTracking().ToListAsync();
