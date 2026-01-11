@@ -28,7 +28,7 @@
 | PATCH | `/todo/{id}` | Update a todo (partial update) |
 | DELETE | `/todo/{id}` | Delete a todo |
 
-# Project structure 
+## Project structure 
 ``` text
 TodoApi/
 |
