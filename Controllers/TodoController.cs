@@ -10,7 +10,7 @@ namespace TodoApi.Controllers
     [Route("[controller]")]
     public class TodoController : ControllerBase
     {
-        private ITodoService _todoService;
+        private readonly ITodoService _todoService;
         public TodoController(ITodoService todoService)
         {
             _todoService = todoService;
@@ -43,12 +43,12 @@ namespace TodoApi.Controllers
             return Ok(todoResponse);
         }
         [HttpPost]
-        public async Task<ActionResult<TodoResponse>> Add(TodoRequest todoRequest)
+        public async Task<ActionResult<TodoResponse>> Add(TodoAddRequest todoAddRequest)
         {
             var item = new TodoItem
             {
-                Title = todoRequest.Title,
-                IsCompleted = todoRequest.IsCompleted
+                Title = todoAddRequest.Title,
+                IsCompleted = todoAddRequest.IsCompleted
             };
             var todoItem = await _todoService.AddAsync(item);
             var todoResponse = new TodoResponse 
@@ -61,14 +61,20 @@ namespace TodoApi.Controllers
             return CreatedAtAction(nameof(GetById), new { id = todoResponse.Id }, todoResponse);
         }
         [HttpPut("{id}")]
-        public async Task<IActionResult> Update(TodoRequest todoRequest, int id)
+        public async Task<IActionResult> Update(TodoUpdateRequest todoUpdateRequest, int id)
         {
             var item = new TodoItem
             {
-                Title = todoRequest.Title,
-                IsCompleted = todoRequest.IsCompleted
+                Title = todoUpdateRequest.Title,
+                IsCompleted = todoUpdateRequest.IsCompleted
             };
             var success = await _todoService.UpdateAsync(item, id);
+            return success ? NoContent() : NotFound();
+        }
+        [HttpPatch("{id}")]
+        public async Task<IActionResult> Patch(int id, TodoPatchRequest todoPatchRequest)
+        {
+            var success = await _todoService.PatchAsync(id, todoPatchRequest.Title, todoPatchRequest.IsCompleted);
             return success ? NoContent() : NotFound();
         }
         [HttpDelete("{id}")]

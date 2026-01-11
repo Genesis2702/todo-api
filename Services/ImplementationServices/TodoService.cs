@@ -16,17 +16,17 @@ namespace TodoApi.Services.ImplementationServices
         {
             return await _todoContext.TodoItems.AsNoTracking().ToListAsync();
         }
+        public async Task<TodoItem?> GetByIdAsync(int id)
+        {
+            return await _todoContext.TodoItems.AsNoTracking().FirstOrDefaultAsync(item => item.Id == id);
+        }
         public async Task<TodoItem> AddAsync(TodoItem item)
         {
             item.IsCompleted = false;
             item.CreatedAt = DateOnly.FromDateTime(DateTime.Now);
             await _todoContext.TodoItems.AddAsync(item);
-            await _todoContext.SaveChangesAsync(); 
+            await _todoContext.SaveChangesAsync();
             return item;
-        }
-        public async Task<TodoItem?> GetByIdAsync(int id)
-        {
-            return await _todoContext.TodoItems.AsNoTracking().FirstOrDefaultAsync(item => item.Id == id);
         }
         public async Task<bool> UpdateAsync(TodoItem item, int id)
         {
@@ -37,6 +37,21 @@ namespace TodoApi.Services.ImplementationServices
             }
             exist.Title = item.Title;
             exist.IsCompleted = item.IsCompleted;
+            await _todoContext.SaveChangesAsync();
+            return true;
+        }
+        public async Task<bool> PatchAsync(int id, string? title, bool? isCompleted)
+        {
+            var todoItem = await _todoContext.TodoItems.FirstOrDefaultAsync(item => item.Id == id);
+            if (todoItem == null || title == null && isCompleted == null) return false;
+            if (title != null)
+            {
+                todoItem.Title = title;
+            }
+            if (isCompleted.HasValue)
+            {
+                todoItem.IsCompleted = (bool)isCompleted;
+            }
             await _todoContext.SaveChangesAsync();
             return true;
         }
