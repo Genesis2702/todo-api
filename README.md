@@ -25,7 +25,7 @@
 | GET | `/todo/{id}` | Get todo item by id |
 | POST | `/todo` | Create a new todo item |
 | PUT | `/todo/{id}` | Update a todo (full update) |
-| PATCH | `/todo/{id} | Update a todo (partial update) |
+| PATCH | `/todo/{id}` | Update a todo (partial update) |
 | DELETE | `/todo/{id}` | Delete a todo |
 
 # Project structure 
@@ -34,12 +34,12 @@ TodoApi/
 |
 |-Controllers/
 |-Services/
-|   |-ImplementationServices
-|   |-InterfaceServices
+|   |-ImplementationServices/
+|   |-InterfaceServices/
 |-Data/
 |-DTO/
-|   |-Request
-|   |-Response
+|   |-Request/
+|   |-Response/
 |-Models/
 |-Migrations/
 |_Program.cs 
